@@ -1,0 +1,23 @@
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+// Supabase 프로젝트 설정에서 복사한 URL과 API Key 입력
+const supabaseUrl = 'YOUR_SUPABASE_URL'
+const supabaseKey = 'YOUR_SUPABASE_ANON_KEY'
+const supabase = createClient(supabaseUrl, supabaseKey)
+
+// 운동 기록 제출 함수
+async function submitLog() {
+  const name = document.getElementById('username').value;
+  const steps = parseInt(document.getElementById('steps').value);
+  const stairs = parseInt(document.getElementById('stairs').value);
+  const video = document.getElementById('video').checked;
+
+  const { data, error } = await supabase
+    .from('exercise_logs')
+    .insert([
+      { user_name: name, steps: steps, stairs: stairs, watched_video: video }
+    ])
+
+  if (error) alert('등록 실패: ' + error.message);
+  else alert('오늘의 운동 등록 완료!');
+}
