@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>20인 운동 확인 프로그램</title>
+    <style>
+        :root { --primary-color: #4f46e5; --background-color: #f9fafb; --card-background: #ffffff; --text-color: #111827; --border-color: #e5e7eb; }
+        body { font-family: -apple-system, sans-serif; background-color: var(--background-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .container { max-width: 600px; width: 100%; background: var(--card-background); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
+        h1, h2 { text-align: center; color: var(--primary-color); margin-top: 0; }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-weight: 600; margin-bottom: 6px; }
+        input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; box-sizing: border-box; }
+        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
+        input[type="checkbox"] { width: 18px; height: 18px; }
+        button { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
+        th, td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); }
+        th { background-color: #f3f4f6; font-weight: 600; }
+        .score-badge { background-color: #e0e7ff; color: var(--primary-color); padding: 4px 8px; border-radius: 9999px; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>🏋️ 오늘의 운동 체크</h1>
+        <form id="exerciseForm">
+            <div class="form-group">
+                <label for="username">이름 선택</label>
+                <select id="username" required>
+                    <option value="">-- 이름을 선택하세요 --</option>
+                    <option value="김민선">김민선</option>
+                    <option value="김민정">김민정</option>
+                    <option value="김민곤">김민곤</option>
+                    <option value="김윤우">김윤우</option>
+                    <option value="김민석">김민석</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="steps">걸음 수 (10,000보당 1점)</label>
+                <input type="number" id="steps" min="0" placeholder="예: 10400" required>
+            </div>
+
+            <div class="form-group">
+                <label for="stairs">계단 오른 층수 (20층당 1점)</label>
+                <input type="number" id="stairs" min="0" placeholder="예: 40" required>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <input type="checkbox" id="video">
+                <label for="video">오늘 운동 영상을 보고 운동했습니까? (1점)</label>
+            </div>
+
+            <button type="submit">오늘의 기록 제출하기</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h2>🏆 오늘의 실시간 순위</h2>
+        <table>
+            <thead>
+                <tr>
+                    <th>순위</th>
+                    <th>이름</th>
+                    <th>총점</th>
+                    <th>상세</th>
+                </tr>
+            </thead>
+            <tbody id="leaderboard">
+                <tr><td colspan="4">데이터를 불러오는 중입니다...</td></tr>
+            </tbody>
+        </table>
+    </div>
+
+    <script type="module">
+        import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
+
+        // ⚠️여기에 방금 1단계에서 복사한 내 창고 주소와 키를 붙여넣으세요!
+        const SUPABASE_URL = 'https://jdzguqnfwcseceofpcnw.supabase.co/rest/v1/';
+        const SUPABASE_KEY = 'sb_publishable_C_ozS7YxTu0XgUqpZEu4VA_NbWSEYZx';
+        
+        const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 랭킹 불러오기 함수
+        async function loadLeaderboard() {
+            const today = new Date().toLocaleDateString('sv-SE'); // 오늘 날짜 계산 (YYYY-MM-DD)
+
+            const { data, error } = await supabase
+                .from('exercise_logs')
+                .select('*')
+                .eq('log_date', today)
+                .order('total_score', { ascending: false });
+
+            if (error) { console.error(error); return; }
+
+            const tbody = document.getElementById('leaderboard');
+            tbody.innerHTML = '';
+
+            if (data.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="4">오늘 첫 기록을 등록해 보세요! 🏃‍♂️</td></tr>';
+                return;
+            }
+
+            data.forEach((row, index) => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${index + 1}등</td>
+                    <td><strong>${row.user_name}</strong></td>
+                    <td><span class="score-badge">${row.total_score}점</span></td>
+                    <td style="font-size: 13px; color: #666;">${row.steps.toLocaleString()}보 / ${row.stairs}층</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // 기록 제출 함수
+        document.getElementById('exerciseForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const name = document.getElementById('username').value;
+            const steps = parseInt(document.getElementById('steps').value) || 0;
+            const stairs = parseInt(document.getElementById('stairs').value) || 0;
+            const video = document.getElementById('video').checked;
+
+            const { error } = await supabase
+                .from('exercise_logs')
+                .insert([{ user_name: name, steps: steps, stairs: stairs, watched_video: video }]);
+
+            if (error) {
+                alert('등록 실패: ' + error.message);
+            } else {
+                alert('🎉 오늘의 운동 기록이 등록되었습니다!');
+                document.getElementById('exerciseForm').reset();
+                loadLeaderboard();
+            }
+        });
+
+        loadLeaderboard();
+    </script>
+</body>
+</html>
