@@ -3,22 +3,153 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>20인 운동 확인 프로그램</title>
+    <title>🏋️ 모던 파스텔 운동 체크 프로그램</title>
     <style>
-        :root { --primary-color: #4f46e5; --background-color: #f9fafb; --card-background: #ffffff; --text-color: #111827; --border-color: #e5e7eb; }
-        body { font-family: -apple-system, sans-serif; background-color: var(--background-color); color: var(--text-color); margin: 0; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .container { max-width: 600px; width: 100%; background: var(--card-background); padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 20px; box-sizing: border-box; }
-        h1, h2 { text-align: center; color: var(--primary-color); margin-top: 0; }
-        .form-group { margin-bottom: 16px; }
-        label { display: block; font-weight: 600; margin-bottom: 6px; }
-        input[type="number"], select { width: 100%; padding: 12px; border: 1px solid var(--border-color); border-radius: 6px; font-size: 16px; box-sizing: border-box; }
-        .checkbox-group { display: flex; align-items: center; gap: 8px; margin-top: 10px; }
-        input[type="checkbox"] { width: 18px; height: 18px; }
-        button { width: 100%; padding: 14px; background-color: var(--primary-color); color: white; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
-        table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-        th, td { padding: 12px; text-align: center; border-bottom: 1px solid var(--border-color); }
-        th { background-color: #f3f4f6; font-weight: 600; }
-        .score-badge { background-color: #e0e7ff; color: var(--primary-color); padding: 4px 8px; border-radius: 9999px; font-weight: bold; }
+        /* 파스텔톤 테마 색상 설정 */
+        :root {
+            --primary-color: #7986cb; /* 부드러운 파스텔 블루/보라 */
+            --background-color: #f4f6f9; /* 연한 그레이 배경 */
+            --card-background: #ffffff;
+            --text-color: #4a4a4a;
+            --border-color: #e2e8f0;
+            --accent-color: #ffb74d; /* 파스텔 오렌지 포인트 */
+            --success-bg: #e8f5e9; /* 파스텔 그린 */
+            --success-text: #2e7d32;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--background-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .container {
+            max-width: 500px;
+            width: 100%;
+            background: var(--card-background);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+            margin-bottom: 25px;
+            box-sizing: border-box;
+        }
+        h1, h2 {
+            text-align: center;
+            color: var(--primary-color);
+            margin-top: 0;
+            font-size: 24px;
+            font-weight: 700;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #616161;
+            font-size: 15px;
+        }
+        input[type="number"], select {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            font-size: 16px;
+            box-sizing: border-box;
+            transition: all 0.3s;
+            background-color: #fbfbfb;
+        }
+        input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background-color: #ffffff;
+        }
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 12px;
+            margin-top: 15px;
+            cursor: pointer;
+        }
+        input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            accent-color: var(--primary-color);
+            cursor: pointer;
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            margin-top: 10px;
+            box-shadow: 0 4px 12px rgba(121, 134, 203, 0.3);
+        }
+        button:hover {
+            background-color: #64748b;
+        }
+        button:active {
+            transform: scale(0.98);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            padding: 14px 10px;
+            text-align: center;
+            border-bottom: 1px solid var(--border-color);
+        }
+        th {
+            background-color: #f0f2f5;
+            color: #555;
+            font-weight: 600;
+            font-size: 14px;
+            border-top: 1px solid var(--border-color);
+        }
+        tr:last-child td {
+            border-bottom: none;
+        }
+        .rank-badge {
+            display: inline-block;
+            width: 26px;
+            height: 26px;
+            line-height: 26px;
+            border-radius: 50%;
+            background: #e9ecef;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        tr:nth-child(1) .rank-badge { background: #ffe082; color: #795548; } /* 1등 파스텔 골드 */
+        tr:nth-child(2) .rank-badge { background: #cfd8dc; color: #37474f; } /* 2등 파스텔 실버 */
+        tr:nth-child(3) .rank-badge { background: #ffccbc; color: #d84315; } /* 3등 파스텔 브론즈 */
+
+        .score-badge {
+            background-color: var(--success-bg);
+            color: var(--success-text);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .detail-text {
+            font-size: 12px;
+            color: #888;
+        }
     </style>
 </head>
 <body>
@@ -30,28 +161,26 @@
                 <label for="username">이름 선택</label>
                 <select id="username" required>
                     <option value="">-- 이름을 선택하세요 --</option>
-                    <option value="김민선">김민선</option>
-                    <option value="김민정">김민정</option>
-                    <option value="김민곤">김민곤</option>
-                    <option value="김윤우">김윤우</option>
-                    <option value="김민석">김민석</option>
-                </select>
+                    <option value="홍길동">홍길동</option>
+                    <option value="김철수">김철수</option>
+                    <option value="이영희">이영희</option>
+                    </select>
             </div>
             
             <div class="form-group">
-                <label for="steps">걸음 수 (10,000보당 1점)</label>
-                <input type="number" id="steps" min="0" placeholder="예: 10400" required>
+                <label for="steps">걸음 수 (10,000보 이상 시 1점)</label>
+                <input type="number" id="steps" min="0" placeholder="예: 10500" required>
             </div>
 
             <div class="form-group">
-                <label for="stairs">계단 오른 층수 (20층당 1점)</label>
+                <label for="stairs">계단 오른 층수 (20층:1점 / 40층:2점 / 60층:3점)</label>
                 <input type="number" id="stairs" min="0" placeholder="예: 40" required>
             </div>
 
-            <div class="form-group checkbox-group">
+            <label class="checkbox-group" for="video">
                 <input type="checkbox" id="video">
-                <label for="video">오늘 운동 영상을 보고 운동했습니까? (1점)</label>
-            </div>
+                <span>오늘 운동 영상을 보고 운동했나요? (1점)</span>
+            </label>
 
             <button type="submit">오늘의 기록 제출하기</button>
         </form>
@@ -65,7 +194,7 @@
                     <th>순위</th>
                     <th>이름</th>
                     <th>총점</th>
-                    <th>상세</th>
+                    <th>상세 기록</th>
                 </tr>
             </thead>
             <tbody id="leaderboard">
@@ -77,15 +206,41 @@
     <script type="module">
         import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm'
 
-        // ⚠️여기에 방금 1단계에서 복사한 내 창고 주소와 키를 붙여넣으세요!
-        const SUPABASE_URL = 'https://jdzguqnfwcseceofpcnw.supabase.co/rest/v1/';
-        const SUPABASE_KEY = 'sb_publishable_C_ozS7YxTu0XgUqpZEu4VA_NbWSEYZx';
+        // ⚠️ [필수] 본인의 슈퍼베이스 정보로 꼭 다시 변경해 주세요!
+        const SUPABASE_URL = '여기에_Project_URL을_넣으세요';
+        const SUPABASE_KEY = '여기에_anon_public_열쇠를_넣으세요';
         
         const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        // 사용자가 요청한 규칙대로 정확하게 점수를 계산하는 로직
+        function calculateScore(steps, stairs, watchedVideo) {
+            let score = 0;
+
+            // 1. 걸음 수 점수: 10,000보 이상이면 무조건 1점
+            if (steps >= 10000) {
+                score += 1;
+            }
+
+            // 2. 계단 점수 차등 지급
+            if (stairs >= 60) {
+                score += 3;
+            } else if (stairs >= 40) {
+                score += 2;
+            } else if (stairs >= 20) {
+                score += 1;
+            } // 20층 미만은 자동으로 0점 고정
+
+            // 3. 영상 시청 점수
+            if (watchedVideo) {
+                score += 1;
+            }
+
+            return score;
+        }
+
         // 랭킹 불러오기 함수
         async function loadLeaderboard() {
-            const today = new Date().toLocaleDateString('sv-SE'); // 오늘 날짜 계산 (YYYY-MM-DD)
+            const today = new Date().toLocaleDateString('sv-SE'); // YYYY-MM-DD 형식 계산
 
             const { data, error } = await supabase
                 .from('exercise_logs')
@@ -106,10 +261,10 @@
             data.forEach((row, index) => {
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td>${index + 1}등</td>
+                    <td><span class="rank-badge">${index + 1}</span></td>
                     <td><strong>${row.user_name}</strong></td>
                     <td><span class="score-badge">${row.total_score}점</span></td>
-                    <td style="font-size: 13px; color: #666;">${row.steps.toLocaleString()}보 / ${row.stairs}층</td>
+                    <td><span class="detail-text">${row.steps.toLocaleString()}보 / ${row.stairs}층</span></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -123,14 +278,24 @@
             const stairs = parseInt(document.getElementById('stairs').value) || 0;
             const video = document.getElementById('video').checked;
 
+            // 앱 자체에서 정확하게 점수를 먼저 계산함
+            const totalScore = calculateScore(steps, stairs, video);
+
+            // 슈퍼베이스 창고로 계산된 점수까지 한 번에 안전하게 전송함
             const { error } = await supabase
                 .from('exercise_logs')
-                .insert([{ user_name: name, steps: steps, stairs: stairs, watched_video: video }]);
+                .insert([{ 
+                    user_name: name, 
+                    steps: steps, 
+                    stairs: stairs, 
+                    watched_video: video,
+                    total_score: totalScore 
+                }]);
 
             if (error) {
                 alert('등록 실패: ' + error.message);
             } else {
-                alert('🎉 오늘의 운동 기록이 등록되었습니다!');
+                alert(`🎉 등록 완료! 오늘의 획득 점수는 [ ${totalScore}점 ] 입니다.`);
                 document.getElementById('exerciseForm').reset();
                 loadLeaderboard();
             }
